@@ -4,12 +4,11 @@
 
 ## 機能
 
-以下の4つの認知課題を1つのアプリケーションから選択して実施できます：
+以下の3つの認知課題を1つのアプリケーションから選択して実施できます：
 
 - **Flanker Task** - フランカー課題（干渉制御機能の測定）
 - **Go/NoGo Task** - Go/NoGo課題（反応抑制と衝動性の評価）
 - **Stroop Task** - ストループ課題（選択的注意と認知制御能力の測定）
-- **TMT (Trail Making Test)** - トレイルメイキング課題（視覚探索、処理速度、実行機能の測定）
 
 ## セットアップ
 
@@ -49,7 +48,6 @@ python main_app.py
 - `flanker.py` - Flanker課題（個別版）
 - `gonogo.py` - Go/NoGo課題（個別版）
 - `stroop.py` - Stroop課題（個別版）
-- `tmt.py` - トレイルメイキング課題（個別版）
 - `templates/` - HTMLテンプレートファイル
 
 ## Renderでのデプロイ
