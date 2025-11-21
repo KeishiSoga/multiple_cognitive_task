@@ -4,11 +4,12 @@
 
 ## 機能
 
-以下の3つの認知課題を1つのアプリケーションから選択して実施できます：
+以下の4つの認知課題を1つのアプリケーションから選択して実施できます：
 
 - **Flanker Task** - フランカー課題（干渉制御機能の測定）
 - **Go/NoGo Task** - Go/NoGo課題（反応抑制と衝動性の評価）
 - **Stroop Task** - ストループ課題（選択的注意と認知制御能力の測定）
+- **N-back Task** - N-back課題（ワーキングメモリと注意機能の測定）
 
 ## セットアップ
 
@@ -48,6 +49,7 @@ python main_app.py
 - `flanker.py` - Flanker課題（個別版）
 - `gonogo.py` - Go/NoGo課題（個別版）
 - `stroop.py` - Stroop課題（個別版）
+- `nback.py` - N-back課題（個別版）
 - `templates/` - HTMLテンプレートファイル
 
 ## Renderでのデプロイ

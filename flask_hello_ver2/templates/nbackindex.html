@@ -367,12 +367,15 @@
                     let stimulusDisplayTime = 0;
                     let previousPositionId = null;
                     
+                    // ベースURLを取得（現在のパスから）
+                    const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '/nback';
+                    
                     // スタートボタンのイベントリスナー
                     startButton.addEventListener('click', function() {
                         const totalTrialsValue = parseInt(totalTrialsInput.value) || 30;
                         
                         // サーバーに実験開始を通知
-                        fetch('/start', {
+                        fetch(basePath + '/start', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -414,7 +417,7 @@
                             console.log(`反応時間: ${reactionTime}ms`);
                             
                             // サーバーに反応を送信
-                            fetch('/record_response', {
+                            fetch(basePath + '/record_response', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -438,7 +441,7 @@
                     
                     // 次の試行を取得して表示
                     function nextTrial() {
-                        fetch('/next_trial')
+                        fetch(basePath + '/next_trial')
                         .then(response => response.json())
                         .then(data => {
                             if (data.status === 'completed') {
@@ -449,7 +452,7 @@
                                 
                                 // 結果ページへリダイレクト
                                 setTimeout(() => {
-                                    window.location.href = '/results';
+                                    window.location.href = basePath + '/results';
                                 }, 1000);
                                 return;
                             }
@@ -500,7 +503,7 @@
                                             isWaitingForResponse = false;
                                             
                                             // 反応なしとして記録
-                                            fetch('/record_response', {
+                                            fetch(basePath + '/record_response', {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',
@@ -518,7 +521,7 @@
                                                     experimentDiv.classList.add('hidden');
                                                     loadingDiv.classList.remove('hidden');
                                                     setTimeout(() => {
-                                                        window.location.href = '/results';
+                                                        window.location.href = basePath + '/results';
                                                     }, 500);
                                                 } else {
                                                     previousPositionId = positionId;
@@ -532,7 +535,7 @@
                                                     experimentDiv.classList.add('hidden');
                                                     loadingDiv.classList.remove('hidden');
                                                     setTimeout(() => {
-                                                        window.location.href = '/results';
+                                                        window.location.href = basePath + '/results';
                                                     }, 500);
                                                 } else {
                                                     previousPositionId = positionId;
@@ -570,7 +573,7 @@
                                     experimentDiv.classList.add('hidden');
                                     loadingDiv.classList.remove('hidden');
                                     setTimeout(() => {
-                                        window.location.href = '/results';
+                                        window.location.href = basePath + '/results';
                                     }, 500);
                                 }, remainingTime);
                             } else {
@@ -581,7 +584,7 @@
                                 experimentDiv.classList.add('hidden');
                                 loadingDiv.classList.remove('hidden');
                                 setTimeout(() => {
-                                    window.location.href = '/results';
+                                    window.location.href = basePath + '/results';
                                 }, 500);
                             }
                         } else {
