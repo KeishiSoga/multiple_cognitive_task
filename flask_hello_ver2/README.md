@@ -52,8 +52,27 @@ python main_app.py
 - `tmt.py` - トレイルメイキング課題（個別版）
 - `templates/` - HTMLテンプレートファイル
 
+## Renderでのデプロイ
+
+このアプリケーションはRenderで簡単にデプロイできます。
+
+### デプロイ手順
+
+1. [Render](https://render.com)にアカウントを作成（GitHubアカウントでログイン可能）
+2. 「New +」→「Web Service」を選択
+3. GitHubリポジトリを接続
+4. 以下の設定を入力：
+   - **Name**: `multiple-cognitive-task`（任意）
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn main_app:app`
+5. 「Create Web Service」をクリック
+
+デプロイが完了すると、自動的にURLが生成されます（例: `https://multiple-cognitive-task.onrender.com`）
+
 ## 注意事項
 
-- ポート5006で起動します（ポート5000はmacOSのAirPlay Receiverで使用される可能性があります）
+- ローカル環境ではポート5006で起動します（ポート5000はmacOSのAirPlay Receiverで使用される可能性があります）
+- Renderでは環境変数`PORT`が自動的に設定されます
 - 各課題はセッションを使用してデータを保存します
 

@@ -568,5 +568,7 @@ def tmt_results():
         return render_template('tmtindex.html', error=f'エラーが発生しました: {str(e)}', template='results')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5006)
+    import os
+    port = int(os.environ.get('PORT', 5006))
+    app.run(debug=False, host='0.0.0.0', port=port)
 
