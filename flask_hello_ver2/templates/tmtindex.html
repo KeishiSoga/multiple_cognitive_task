@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トレイルメイキングテスト</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        h3 {
+            margin-top: 0;
+        }
+        .test-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        #tmt-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+        .number-circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 3px solid #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .number-circle:hover {
+            background-color: #e7f3ff;
+            transform: scale(1.1);
+        }
+        .number-circle.clicked {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        .number-circle.current {
+            background-color: #ffc107;
+            border-color: #ff9800;
+            color: #000;
+            animation: pulse 1s infinite;
+        }
+        .number-circle.error {
+            background-color: #dc3545;
+            border-color: #c82333;
+            color: white;
+            animation: shake 0.5s;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .key-instruction {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .results-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .summary-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .summary-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table thead th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 18px;
+        }
+        .d-block {
+            display: block;
+        }
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .alert {
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .status-info {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">トレイルメイキングテスト（TMT-A）</h1>
+        
+        {% if template == 'index' %}
+            <!-- 指示画面 -->
+            <div id="instructions" class="instructions">
+                <h3>実験の説明</h3>
+                <p>これはトレイルメイキングテスト（TMT-A）と呼ばれる認知実験です。画面に表示される数字を<strong>1から25まで順番に</strong>クリックして線で結んでください。</p>
+                
+                <div class="key-instruction">
+                    <p><strong>手順：</strong></p>
+                    <ol>
+                        <li>「実験を開始」ボタンをクリック</li>
+                        <li>数字の1をクリック</li>
+                        <li>次に数字の2をクリック（自動的に線で結ばれます）</li>
+                        <li>このように順番に3、4、5...と25まで続けてください</li>
+                        <li>間違った数字をクリックするとエラーになります</li>
+                    </ol>
+                </div>
+                
+                <p class="mt-3">できるだけ速く、正確に数字を順番にクリックしてください。</p>
+                
+                <button id="start-button" class="btn btn-primary btn-lg d-block mx-auto mt-4">実験を開始</button>
+            </div>
+            
+            <!-- テスト画面 -->
+            <div id="test" class="hidden">
+                <div class="status-info">
+                    <p>現在の数字: <span id="current-number">1</span> / 25</p>
+                    <p>エラー数: <span id="error-count">0</span></p>
+                </div>
+                
+                <div class="test-container">
+                    <div class="canvas-wrapper">
+                        <canvas id="tmt-canvas"></canvas>
+                        <div id="numbers-container"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const instructionsDiv = document.getElementById('instructions');
+                    const testDiv = document.getElementById('test');
+                    const startButton = document.getElementById('start-button');
+                    const canvas = document.getElementById('tmt-canvas');
+                    const numbersContainer = document.getElementById('numbers-container');
+                    const currentNumberElement = document.getElementById('current-number');
+                    const errorCountElement = document.getElementById('error-count');
+                    
+                    let ctx = null;
+                    let currentNumber = 1;
+                    let errorCount = 0;
+                    let testActive = false;
+                    let numberPositions = {};
+                    let clickedNumbers = [];
+                    let startTime = null;
+                    
+                    // Canvasのサイズを設定
+                    function resizeCanvas() {
+                        if (!canvas) return;
+                        const wrapper = canvas.parentElement;
+                        if (wrapper && wrapper.offsetWidth > 0) {
+                            canvas.width = wrapper.offsetWidth;
+                            canvas.height = wrapper.offsetHeight;
+                            if (!ctx) {
+                                ctx = canvas.getContext('2d');
+                            }
+                        }
+                    }
+                    
+                    // 数字の位置をランダムに配置
+                    function generateNumberPositions() {
+                        if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                            console.error('Canvasが初期化されていません');
+                            return [];
+                        }
+                        const positions = [];
+                        const margin = 30;
+                        const width = canvas.width - margin * 2;
+                        const height = canvas.height - margin * 2;
+                        
+                        for (let i = 1; i <= 25; i++) {
+                            let x, y, overlap;
+                            do {
+                                x = margin + Math.random() * width;
+                                y = margin + Math.random() * height;
+                                overlap = false;
+                                
+                                // 既存の位置と重複していないか確認
+                                for (let pos of positions) {
+                                    const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                                    if (distance < 80) { // 最小距離
+                                        overlap = true;
+                                        break;
+                                    }
+                                }
+                            } while (overlap);
+                            
+                            positions.push({ number: i, x: x, y: y });
+                            numberPositions[i] = { x: x, y: y };
+                        }
+                        
+                        return positions;
+                    }
+                    
+                    // 数字を表示
+                    function displayNumbers(positions) {
+                        numbersContainer.innerHTML = '';
+                        positions.forEach(pos => {
+                            const circle = document.createElement('div');
+                            circle.className = 'number-circle';
+                            circle.textContent = pos.number;
+                            circle.style.left = (pos.x - 25) + 'px';
+                            circle.style.top = (pos.y - 25) + 'px';
+                            circle.dataset.number = pos.number;
+                            
+                            circle.addEventListener('click', function() {
+                                if (!testActive) return;
+                                handleNumberClick(parseInt(this.dataset.number));
+                            });
+                            
+                            numbersContainer.appendChild(circle);
+                        });
+                    }
+                    
+                    // 線を描画
+                    function drawLine(fromNumber, toNumber) {
+                        if (!ctx) return;
+                        const from = numberPositions[fromNumber];
+                        const to = numberPositions[toNumber];
+                        
+                        if (!from || !to) return;
+                        
+                        ctx.strokeStyle = '#007bff';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.moveTo(from.x, from.y);
+                        ctx.lineTo(to.x, to.y);
+                        ctx.stroke();
+                    }
+                    
+                    // 数字クリックの処理
+                    function handleNumberClick(clickedNum) {
+                        const circle = document.querySelector(`[data-number="${clickedNum}"]`);
+                        
+                        if (clickedNum === currentNumber) {
+                            // 正しい数字
+                            circle.classList.add('clicked');
+                            circle.classList.remove('current', 'error');
+                            
+                            clickedNumbers.push(clickedNum);
+                            
+                            // 線を描画
+                            if (clickedNumbers.length > 1) {
+                                drawLine(clickedNumbers[clickedNumbers.length - 2], clickedNum);
+                            }
+                            
+                            // サーバーに記録
+                            const clickTime = Date.now() - startTime;
+                            fetch(basePath + '/record_click', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    number: clickedNum,
+                                    time: clickTime
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.completed) {
+                                    // 完了
+                                    testActive = false;
+                                    completeTest();
+                                } else {
+                                    // 次の数字へ
+                                    currentNumber = data.next_number;
+                                    currentNumberElement.textContent = currentNumber;
+                                    
+                                    // 次の数字をハイライト
+                                    document.querySelectorAll('.number-circle').forEach(c => {
+                                        c.classList.remove('current');
+                                    });
+                                    const nextCircle = document.querySelector(`[data-number="${currentNumber}"]`);
+                                    if (nextCircle) {
+                                        nextCircle.classList.add('current');
+                                    }
+                                }
+                            });
+                        } else {
+                            // 間違った数字
+                            circle.classList.add('error');
+                            circle.classList.remove('current');
+                            
+                            errorCount++;
+                            errorCountElement.textContent = errorCount;
+                            
+                            // サーバーに記録
+                            fetch(basePath + '/record_click', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    number: clickedNum,
+                                    time: Date.now() - startTime
+                                })
+                            });
+                            
+                            // エラー表示をリセット
+                            setTimeout(() => {
+                                circle.classList.remove('error');
+                            }, 500);
+                        }
+                    }
+                    
+                    // テスト完了
+                    function completeTest() {
+                        const completionTime = Date.now() - startTime;
+                        
+                        fetch(basePath + '/complete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                completion_time: completionTime
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // 結果ページへリダイレクト
+                            window.location.href = basePath + '/results';
+                        });
+                    }
+                    
+                    // ベースURLを取得（現在のパスから）
+                    const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '/tmt';
+                    
+                    // スタートボタンのイベントリスナー
+                    if (startButton) {
+                        startButton.addEventListener('click', function() {
+                            console.log('スタートボタンがクリックされました');
+                            
+                            fetch(basePath + '/start', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                }
+                            })
+                            .then(response => {
+                                console.log('レスポンス受信:', response);
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('データ:', data);
+                                if (data.status === 'success') {
+                                    instructionsDiv.classList.add('hidden');
+                                    testDiv.classList.remove('hidden');
+                                    
+                                    // Canvasを初期化
+                                    setTimeout(() => {
+                                        resizeCanvas();
+                                        
+                                        if (ctx) {
+                                            // Canvasをクリア
+                                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                            
+                                            // 数字の位置を生成
+                                            const positions = generateNumberPositions();
+                                            displayNumbers(positions);
+                                            
+                                            // テスト開始
+                                            testActive = true;
+                                            currentNumber = 1;
+                                            errorCount = 0;
+                                            clickedNumbers = [];
+                                            startTime = Date.now();
+                                            
+                                            currentNumberElement.textContent = currentNumber;
+                                            errorCountElement.textContent = errorCount;
+                                            
+                                            // 最初の数字をハイライト
+                                            const firstCircle = document.querySelector(`[data-number="1"]`);
+                                            if (firstCircle) {
+                                                firstCircle.classList.add('current');
+                                            }
+                                        } else {
+                                            console.error('Canvas contextが取得できませんでした');
+                                        }
+                                    }, 100);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('エラー:', error);
+                                alert('エラーが発生しました: ' + error.message);
+                            });
+                        });
+                    } else {
+                        console.error('スタートボタンが見つかりません');
+                    }
+                });
+            </script>
+        {% elif template == 'results' %}
+            <!-- 結果画面 -->
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% else %}
+                <!-- 結果サマリー -->
+                <div class="results-card">
+                    <h2>テスト結果</h2>
+                    <table class="table summary-table">
+                        <tbody>
+                            <tr>
+                                <th>所要時間</th>
+                                <td>{{ summary.total_time }}秒</td>
+                            </tr>
+                            <tr>
+                                <th>エラー数</th>
+                                <td>{{ summary.errors }}回</td>
+                            </tr>
+                            <tr>
+                                <th>総クリック数</th>
+                                <td>{{ summary.total_clicks }}回</td>
+                            </tr>
+                            <tr>
+                                <th>完了した数字</th>
+                                <td>{{ summary.numbers_completed }} / 25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 再実験ボタン -->
+                <div class="text-center mb-5">
+                    <a href="/" class="btn btn-primary btn-lg">もう一度実験する</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+</body>
+</html>
+

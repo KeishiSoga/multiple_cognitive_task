@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ストループ課題</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        h3 {
+            margin-top: 0;
+        }
+        .stimulus-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .stimulus-text {
+            font-size: 120px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+        .progress {
+            height: 30px;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .key-instruction {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .key-mapping {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .key-item {
+            padding: 8px 12px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .hidden {
+            display: none;
+        }
+        .results-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .summary-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .summary-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table thead th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        .table-danger {
+            background-color: #f8d7da !important;
+        }
+        .result-highlight {
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 20px;
+        }
+        .result-highlight p {
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 18px;
+        }
+        .d-block {
+            display: block;
+        }
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        .my-4 {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .my-5 {
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-control:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .alert {
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .spinner-border {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            vertical-align: text-bottom;
+            border: 0.25em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border 0.75s linear infinite;
+        }
+        .text-primary {
+            color: #007bff;
+        }
+        @keyframes spinner-border {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">ストループ課題</h1>
+        
+        {% if template == 'index' %}
+            <!-- 指示画面 -->
+            <div id="instructions" class="instructions">
+                <h3>実験の説明</h3>
+                <p>これはストループ課題と呼ばれる認知実験です。画面に表示される文字の<strong>色</strong>に応じて、対応するキーを押してください。</p>
+                <p><strong>重要：文字の意味ではなく、文字の色に反応してください。</strong></p>
+                
+                <div class="key-instruction">
+                    <p>色とキーの対応：</p>
+                    <div class="key-mapping">
+                        <div class="key-item"><span style="color: #dc3545; font-weight: bold;">赤色</span> → <strong>1キー</strong></div>
+                        <div class="key-item"><span style="color: #007bff; font-weight: bold;">青色</span> → <strong>2キー</strong></div>
+                        <div class="key-item"><span style="color: #ffc107; font-weight: bold;">黄色</span> → <strong>3キー</strong></div>
+                        <div class="key-item"><span style="color: #28a745; font-weight: bold;">緑色</span> → <strong>4キー</strong></div>
+                    </div>
+                </div>
+                
+                <p class="mt-3">各刺激は0.5秒間表示され、その後1.5秒間は「+」が表示されます。この2秒間で反応してください。</p>
+                <p>2秒以内に反応がない場合は自動的に次の試行に進みます。</p>
+                <p>できるだけ速く、正確に反応してください。</p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="congruent-trials-input">一致条件の試行回数（デフォルト：20回）</label>
+                        <input type="number" id="congruent-trials-input" class="form-control" min="1" max="50" value="20">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="incongruent-trials-input">不一致条件の試行回数（デフォルト：20回）</label>
+                        <input type="number" id="incongruent-trials-input" class="form-control" min="1" max="50" value="20">
+                    </div>
+                </div>
+                
+                <button id="start-button" class="btn btn-primary btn-lg d-block mx-auto mt-4">実験を開始</button>
+            </div>
+            
+            <!-- 実験画面 -->
+            <div id="experiment" class="hidden">
+                <div class="progress">
+                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                
+                <div class="stimulus-container">
+                    <span id="stimulus">+</span>
+                </div>
+                
+                <div class="text-center">
+                    <p>現在の試行: <span id="current-trial">0</span> / <span id="total-trials">0</span></p>
+                    <p>文字の<strong>色</strong>に応じて、対応するキー（1-5）を押してください</p>
+                    <p>赤=1, 青=2, 黄=3, 黒=4, 緑=5</p>
+                </div>
+            </div>
+            
+            <!-- 読み込み中表示 -->
+            <div id="loading" class="hidden text-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">結果を計算中...</p>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // 要素の参照を取得
+                    const instructionsDiv = document.getElementById('instructions');
+                    const experimentDiv = document.getElementById('experiment');
+                    const loadingDiv = document.getElementById('loading');
+                    const startButton = document.getElementById('start-button');
+                    const congruentTrialsInput = document.getElementById('congruent-trials-input');
+                    const incongruentTrialsInput = document.getElementById('incongruent-trials-input');
+                    const stimulusElement = document.getElementById('stimulus');
+                    const progressBar = document.getElementById('progress-bar');
+                    const currentTrialElement = document.getElementById('current-trial');
+                    const totalTrialsElement = document.getElementById('total-trials');
+                    
+                    // 実験の状態変数
+                    let isWaitingForResponse = false;
+                    let experimentActive = false;
+                    let totalTrials = 0;
+                    let currentTrial = 0;
+                    let trialStartTime = 0;
+                    let currentTrialType = null;
+                    let stimulusDisplayTime = 0;
+                    let responseKeys = {};
+                    
+                    // ベースURLを取得（現在のパスから）
+                    const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '/stroop';
+                    
+                    // スタートボタンのイベントリスナー
+                    startButton.addEventListener('click', function() {
+                        const congruentTrials = parseInt(congruentTrialsInput.value) || 20;
+                        const incongruentTrials = parseInt(incongruentTrialsInput.value) || 20;
+                        
+                        // サーバーに実験開始を通知
+                        fetch(basePath + '/start', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `congruent_trials=${congruentTrials}&incongruent_trials=${incongruentTrials}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // 画面を実験表示に切り替え
+                                instructionsDiv.classList.add('hidden');
+                                experimentDiv.classList.remove('hidden');
+                                
+                                totalTrials = data.total_trials;
+                                totalTrialsElement.textContent = totalTrials;
+                                
+                                // 実験を開始
+                                experimentActive = true;
+                                nextTrial();
+                            }
+                        });
+                    });
+                    
+                    // キー入力のイベントリスナー
+                    document.addEventListener('keydown', function(event) {
+                        if (!experimentActive || !isWaitingForResponse) return;
+                        
+                        // 1-5キーを検出
+                        const key = event.key;
+                        if (key >= '1' && key <= '5') {
+                            event.preventDefault();
+                            
+                            console.log('キー押下:', key);
+                            
+                            isWaitingForResponse = false;
+                            
+                            // 反応時間を計算（ミリ秒）
+                            const reactionTime = Date.now() - trialStartTime;
+                            console.log(`反応時間: ${reactionTime}ms`);
+                            
+                            // サーバーに反応を送信
+                            fetch(basePath + '/record_response', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    response: key,
+                                    reaction_time: reactionTime
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('サーバーレスポンス:', data);
+                                setTimeout(showBlank, 0);
+                            })
+                            .catch(error => {
+                                console.error('エラー:', error);
+                                setTimeout(showBlank, 0);
+                            });
+                        }
+                    }, true);
+                    
+                    // 次の試行を取得して表示
+                    function nextTrial() {
+                        fetch(basePath + '/next_trial')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'completed') {
+                                // 実験終了
+                                experimentActive = false;
+                                experimentDiv.classList.add('hidden');
+                                loadingDiv.classList.remove('hidden');
+                                
+                                // 結果ページへリダイレクト
+                                setTimeout(() => {
+                                    window.location.href = basePath + '/results';
+                                }, 1000);
+                                return;
+                            }
+                            
+                            // 反応キーのマッピングを保存
+                            responseKeys = data.response_keys || {};
+                            
+                            // 進捗を更新
+                            currentTrial = data.trial_number;
+                            currentTrialElement.textContent = currentTrial;
+                            progressBar.style.width = `${(currentTrial / totalTrials) * 100}%`;
+                            
+                            // 最後の試行かどうかを判定
+                            const isLastTrial = (currentTrial === totalTrials);
+                            
+                            // 最初は+を表示
+                            stimulusElement.innerHTML = '+';
+                            stimulusElement.className = '';
+                            
+                            // 一定時間後に刺激を表示
+                            setTimeout(() => {
+                                // 刺激を表示（文字を色付きで表示）
+                                currentTrialType = data.trial_type;
+                                stimulusElement.innerHTML = '<span class="stimulus-text" style="color: ' + data.display_color_code + ';">' + data.text + '</span>';
+                                
+                                console.log('刺激表示:', data.text, '色:', data.display_color, isLastTrial ? '(最後の試行)' : '');
+                                
+                                // 反応時間の計測開始
+                                trialStartTime = Date.now();
+                                stimulusDisplayTime = Date.now();
+                                console.log('反応時間計測開始:', trialStartTime);
+                                isWaitingForResponse = true;
+                                
+                                // 刺激表示時間（0.5秒）後にブランク画面に戻す
+                                setTimeout(() => {
+                                    stimulusElement.innerHTML = '+';
+                                    stimulusElement.className = '';
+                                    console.log('刺激消失、ブランク表示中も反応を待機');
+                                }, data.stimulus_duration || 500);
+                                
+                                // タイムアウト処理：最大反応時間（2秒）後に自動的に次に進む
+                                const timeoutDuration = isLastTrial ? 
+                                    (data.stimulus_duration || 500) + (data.isi_duration || 1500) : // 最後の試行：0.5秒 + 1.5秒 = 2秒
+                                    (data.max_response_time || 2000); // 通常：2秒
+                                
+                                setTimeout(() => {
+                                    if (isWaitingForResponse) {
+                                        console.log('タイムアウト（' + (isLastTrial ? '最後の試行：刺激提示開始から2秒経過' : '2秒経過') + '）、反応なし');
+                                        isWaitingForResponse = false;
+                                        
+                                        // 反応なしとして記録
+                                        fetch(basePath + '/record_response', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                                response: null,
+                                                reaction_time: null
+                                            })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            console.log('タイムアウト記録完了:', data);
+                                            if (isLastTrial) {
+                                                stimulusElement.innerHTML = '+';
+                                                stimulusElement.className = '';
+                                                experimentActive = false;
+                                                experimentDiv.classList.add('hidden');
+                                                loadingDiv.classList.remove('hidden');
+                                                setTimeout(() => {
+                                                    window.location.href = basePath + '/results';
+                                                }, 500);
+                                            } else {
+                                                nextTrial();
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('タイムアウト記録エラー:', error);
+                                            if (isLastTrial) {
+                                                stimulusElement.innerHTML = '+';
+                                                stimulusElement.className = '';
+                                                experimentActive = false;
+                                                experimentDiv.classList.add('hidden');
+                                                loadingDiv.classList.remove('hidden');
+                                                setTimeout(() => {
+                                                    window.location.href = basePath + '/results';
+                                                }, 500);
+                                            } else {
+                                                nextTrial();
+                                            }
+                                        });
+                                    }
+                                }, timeoutDuration);
+                            }, 1000); // 最初の試行は1秒後に開始
+                        });
+                    }
+                    
+                    // ブランク画面を表示して次の試行の準備
+                    function showBlank() {
+                        console.log('反応記録完了');
+                        isWaitingForResponse = false;
+                        
+                        // 最後の試行かどうかを判定
+                        const isLastTrial = (currentTrial === totalTrials);
+                        
+                        if (isLastTrial) {
+                            // 最後の試行の場合は、刺激提示開始から2秒（0.5秒 + 1.5秒）経過するまで待つ
+                            const elapsedTime = Date.now() - stimulusDisplayTime;
+                            const remainingTime = 2000 - elapsedTime;
+                            
+                            console.log('最後の試行：経過時間=' + elapsedTime + 'ms, 残り時間=' + remainingTime + 'ms');
+                            
+                            if (remainingTime > 0) {
+                                setTimeout(() => {
+                                    stimulusElement.innerHTML = '+';
+                                    stimulusElement.className = '';
+                                    experimentActive = false;
+                                    experimentDiv.classList.add('hidden');
+                                    loadingDiv.classList.remove('hidden');
+                                    setTimeout(() => {
+                                        window.location.href = basePath + '/results';
+                                    }, 500);
+                                }, remainingTime);
+                            } else {
+                                stimulusElement.innerHTML = '+';
+                                stimulusElement.className = '';
+                                experimentActive = false;
+                                experimentDiv.classList.add('hidden');
+                                loadingDiv.classList.remove('hidden');
+                                setTimeout(() => {
+                                    window.location.href = basePath + '/results';
+                                }, 500);
+                            }
+                        } else {
+                            // 通常の試行の場合は、刺激が0.5秒後に自動的にブランク画面に切り替わるのを待つ
+                            const elapsedTime = Date.now() - stimulusDisplayTime;
+                            const waitTime = Math.max(0, 500 - elapsedTime);
+                            
+                            setTimeout(() => {
+                                stimulusElement.innerHTML = '+';
+                                stimulusElement.className = '';
+                                setTimeout(() => {
+                                    nextTrial();
+                                }, 500);
+                            }, waitTime);
+                        }
+                    }
+                });
+            </script>
+        {% elif template == 'results' %}
+            <!-- 結果画面 -->
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% else %}
+                <!-- 結果サマリー -->
+                <div class="results-card">
+                    <h2>実験サマリー</h2>
+                    <table class="table summary-table">
+                        <tbody>
+                            <tr>
+                                <th>総試行数</th>
+                                <td>{{ summary.total_trials }}</td>
+                            </tr>
+                            <tr>
+                                <th>全体の正確率</th>
+                                <td>{{ summary.accuracy }}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>条件別の結果</h3>
+                    <table class="table summary-table">
+                        <thead>
+                            <tr>
+                                <th>条件</th>
+                                <th>試行数</th>
+                                <th>正確率</th>
+                                <th>平均反応時間 (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>一致条件</td>
+                                <td>{{ summary.congruent_total }}</td>
+                                <td>{{ summary.congruent_accuracy }}%</td>
+                                <td>{{ summary.congruent_avg_rt }}</td>
+                            </tr>
+                            <tr>
+                                <td>不一致条件</td>
+                                <td>{{ summary.incongruent_total }}</td>
+                                <td>{{ summary.incongruent_accuracy }}%</td>
+                                <td>{{ summary.incongruent_avg_rt }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="result-highlight">
+                        <p><strong>一致条件</strong>：文字の意味と色が一致する条件（例：「あか」が赤色で表示）</p>
+                        <p><strong>不一致条件</strong>：文字の意味と色が一致しない条件（例：「あか」が青色で表示）</p>
+                        <p><strong>ストループ効果</strong>：{{ summary.stroop_effect }}ms（不一致条件の反応時間 - 一致条件の反応時間）</p>
+                        {% if summary.stroop_effect > 0 %}
+                            <p>ストループ効果が観察されました。不一致条件で反応が遅くなる傾向があります。</p>
+                        {% elif summary.stroop_effect < 0 %}
+                            <p>逆ストループ効果が観察されました。不一致条件の方が反応が速い結果となっています。</p>
+                        {% else %}
+                            <p>ストループ効果は観察されませんでした。</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- 試行ごとのデータ -->
+                <div class="results-card">
+                    <h2>試行データ</h2>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>試行</th>
+                                <th>文字</th>
+                                <th>文字の意味</th>
+                                <th>表示色</th>
+                                <th>条件</th>
+                                <th>反応</th>
+                                <th>正解キー</th>
+                                <th>反応時間 (ms)</th>
+                                <th>正誤</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for trial in trial_data %}
+                                <tr class="{{ 'table-danger' if not trial.is_correct else '' }}">
+                                    <td>{{ trial.trial }}</td>
+                                    <td><strong>{{ trial.text }}</strong></td>
+                                    <td>{{ trial.text_color }}</td>
+                                    <td>{{ trial.display_color }}</td>
+                                    <td>{{ '一致' if trial.trial_type == 'congruent' else '不一致' }}</td>
+                                    <td>{{ trial.response if trial.response else '反応なし' }}</td>
+                                    <td>{{ trial.correct_key }}</td>
+                                    <td>{{ trial.reaction_time if trial.reaction_time else '-' }}</td>
+                                    <td>{{ '正解' if trial.is_correct else '不正解' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 再実験ボタン -->
+                <div class="text-center mb-5">
+                    <a href="/" class="btn btn-primary btn-lg">もう一度実験する</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+</body>
+</html>
+
